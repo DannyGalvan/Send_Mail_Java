@@ -12,24 +12,14 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class Email {
-    
-    private static final String host = "smtp.gmail.com"; // Reemplaza con tu servidor SMTP
-    private static final String port = "587"; // Reemplaza con el puerto SMTP adecuado
-    private static final String userEmail = "correo"; // Reemplaza con tu email
-    private static final String password = "contrasenia"; // Reemplaza con tu contraseña
 
     public static void sendTextEmail(String email, String asunto, String contenido){      
         
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", host); // Reemplaza con tu servidor SMTP
-        properties.put("mail.smtp.port", port); // Reemplaza con el puerto SMTP adecuado
-        properties.put("mail.smtp.auth", "true"); // Si se requiere autenticación
-        properties.put("mail.smtp.starttls.enable", "true");
-        
+        Properties properties = App.applicationProperties();        
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication( userEmail, password);
+                return new PasswordAuthentication( properties.getProperty("mail.smtp.email"), properties.getProperty("mail.smtp.password"));
             }
         });
         
@@ -38,7 +28,7 @@ public class Email {
             Message message = new MimeMessage(session);
 
             // Establecer el remitente
-            message.setFrom(new InternetAddress(userEmail));
+            message.setFrom(new InternetAddress(properties.getProperty("mail.smtp.email")));
 
             // Establecer el destinatario(s)
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
